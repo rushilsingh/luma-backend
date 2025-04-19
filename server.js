@@ -80,7 +80,7 @@ Keep it clear, under 300 words.
     res.status(500).json({ error: err.message });
   }
 });
-
+const PORT = process.env.PORT || 3001;
 app.listen(3001, () => {
   console.log('Luma backend running on http://localhost:3001');
 });
