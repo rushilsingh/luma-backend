@@ -1,6 +1,6 @@
 const express = require('express');
 const { default: lighthouse } = require('lighthouse');
-const chromeLauncher = require('chrome-launcher');
+const puppeteer = require('puppeteer');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const { OpenAI } = require('openai');
@@ -19,12 +19,22 @@ app.post('/analyze', async (req, res) => {
   const { url } = req.body;
   if (!url) return res.status(400).json({ error: 'URL required' });
 
-  const chrome = await chromeLauncher.launch({ chromeFlags: ['--headless'] });
-  const options = { logLevel: 'info', output: 'json', port: chrome.port };
-
+  let browser;
   try {
+    browser = await puppeteer.launch({
+      headless: 'new',
+      args: ['--no-sandbox', '--disable-setuid-sandbox'],
+    });
+
+    const wsEndpoint = browser.wsEndpoint();
+    const chrome = new URL(wsEndpoint);
+    const options = {
+      logLevel: 'info',
+      output: 'json',
+      port: chrome.port,
+    };
+
     const runnerResult = await lighthouse(url, options);
-    await chrome.kill();
 
     const categories = runnerResult.lhr.categories;
     const audits = runnerResult.lhr.audits;
@@ -67,7 +77,7 @@ Keep it clear, under 300 words.
 `;
 
     const completion = await openai.chat.completions.create({
-      model: 'gpt-4.1',
+      model: 'gpt-3.5-turbo', // or 'gpt-4' if you're approved
       messages: [{ role: 'user', content: prompt }],
     });
 
@@ -75,13 +85,15 @@ Keep it clear, under 300 words.
 
     res.json({ summary, suggestions: lowScoringAudits, explanation });
   } catch (err) {
-    await chrome.kill();
     console.error(err);
     res.status(500).json({ error: err.message });
+  } finally {
+    if (browser) await browser.close();
   }
 });
+
 const PORT = process.env.PORT || 3001;
-app.listen(3001, () => {
-  console.log('Luma backend running on http://localhost:3001');
+app.listen(PORT, () => {
+  console.log(`Luma backend running on port ${PORT}`);
 });
 
