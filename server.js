@@ -58,23 +58,26 @@ app.post('/analyze', async (req, res) => {
       }));
 
     const prompt = `
-You are a web performance expert. A Lighthouse audit was run on ${url}.
+You are a senior web performance engineer.
 
-Here are the results:
-Performance: ${summary.performance}%
-Accessibility: ${summary.accessibility}%
-Best Practices: ${summary.bestPractices}%
-SEO: ${summary.seo}%
+A Lighthouse audit was run on: ${url}
 
-These issues were detected:
-${lowScoringAudits.map((a) => `• ${a.title}: ${a.description}`).join('\n')}
+Category Scores:
+- Performance: ${summary.performance}%
+- Accessibility: ${summary.accessibility}%
+- Best Practices: ${summary.bestPractices}%
+- SEO: ${summary.seo}%
 
-Please write a plain-English summary explaining:
-1. What's wrong
-2. Why these issues matter
-3. How a developer can fix them
+The following issues were detected:
+${lowScoringAudits.map((a) => `• [${Math.round(a.score * 100)}%] ${a.title}: ${a.description}`).join('\n')}
 
-Keep it clear, under 300 words.
+Please provide a plain-English summary that includes:
+1. The top 3–5 most important issues (ranked by user impact)
+2. Why each issue matters in practical terms
+3. Suggested fixes or techniques for each (brief but specific)
+4. An overall prioritization strategy (what to fix first and why)
+
+Output should be under 300 words and focused on helping a frontend developer take action.
 `;
 
     const completion = await openai.chat.completions.create({
