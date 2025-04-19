@@ -1,9 +1,10 @@
-const express = require('express');
-const { default: lighthouse } = require('lighthouse');
-const puppeteer = require('puppeteer');
-const cors = require('cors');
-const dotenv = require('dotenv');
-const { OpenAI } = require('openai');
+import express from 'express';
+import lighthouse from 'lighthouse';
+import puppeteer from 'puppeteer';
+import cors from 'cors';
+import dotenv from 'dotenv';
+import { OpenAI } from 'openai';
+import { URL } from 'url';
 
 dotenv.config();
 
