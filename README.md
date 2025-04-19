@@ -26,7 +26,7 @@ This repo contains the backend-only MVP — the core logic is complete and can b
 
 ---
 
-## 🧪 Example Usage
+## 🧪 Example Usage (Local)
 
 ```bash
 curl -s -X POST http://localhost:3001/analyze \
@@ -34,38 +34,48 @@ curl -s -X POST http://localhost:3001/analyze \
   -d '{"url": "https://rushilsingh.dev"}' | jq
 ```
 
-### 🔍 Sample Output
+---
 
-```json
-{
-  "summary": {
-    "url": "https://rushilsingh.dev/",
-    "performance": 82,
-    "accessibility": 92,
-    "bestPractices": 100,
-    "seo": 100
-  },
-  "suggestions": [...],
-  "explanation": "1. The website has several performance issues..."
-}
+## 📦 Deployment
+
+Luma is currently deployed on **Render (Free tier)** and can be tested live via:
+
+```http
+POST https://luma-backend-4gv5.onrender.com/analyze
+Content-Type: application/json
+
+{ "url": "https://rushilsingh.dev" }
 ```
+
+### ⚠️ Note:
+
+- **Render Free** spins down the server after inactivity.  
+  👉 **First request may take 30–60 seconds** to respond.
+- Puppeteer and Lighthouse are resource-heavy.  
+  On the Free tier, audits may time out or fail intermittently.
+- For stable performance, consider:
+  - Render Pro ($7/month)
+  - Docker-based deploy on Fly.io or Railway
+  - VPS (Hetzner, DigitalOcean) with headless Chrome
 
 ---
 
-## 🛠 Setup
+## 🛠 Local Setup
 
 1. Clone the repo:
+
    ```bash
    git clone https://github.com/rushilsingh/luma-backend
    cd luma-backend
    ```
 
 2. Install dependencies:
+
    ```bash
    npm install
    ```
 
-3. Create a `.env` file with your API keys:
+3. Create a `.env` file with your OpenAI API key:
 
    ```env
    OPENAI_API_KEY=sk-...
@@ -77,3 +87,16 @@ curl -s -X POST http://localhost:3001/analyze \
    ```
 
 ---
+
+## 🧠 Next Steps (Optional)
+
+- Frontend UI with Vite + Tailwind (see: `luma-frontend`)
+- Chrome extension to audit current tab
+- Slack bot for on-demand audit summaries
+- GPT function-calling for structured fix recommendations
+
+---
+
+## 📄 License
+
+MIT
